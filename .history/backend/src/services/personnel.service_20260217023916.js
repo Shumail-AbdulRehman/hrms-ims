@@ -1,7 +1,7 @@
 import Personnel from "../models/personnel.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
-const signUpService = async (data) => {
+export const signUpService = async (data) => {
     const existing = await Personnel.findOne({ email: data.email });
     if (existing) {
         throw new ApiError(400, "Email already exists");
@@ -47,4 +47,4 @@ const signInService = async (email, password) => {
     };
 };
 
-export { signInService, signUpService };
+export { signInService };

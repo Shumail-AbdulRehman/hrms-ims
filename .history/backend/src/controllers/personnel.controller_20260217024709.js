@@ -72,7 +72,7 @@ export const signupSchema = z.object({
     updatedAt: z.coerce.date().optional(),
 });
 
-const signUp = asyncHandler(async (req, res, next) => {
+export const signupPersonnel = asyncHandler(async (req, res, next) => {
     const parsed = signupSchema.safeParse(req.body);
     if (!parsed.success) {
         return next(new ApiError(400, parsed.error.errors[0].message));
@@ -113,5 +113,7 @@ const signIn = asyncHandler(async (req, res) => {
         .cookie("refreshToken", loginData.refreshToken, options)
         .json(new ApiResponse(200, loginData, "User logged in successfully"));
 });
+
+const signUp = asyncHandler((req, res, next) => {});
 
 export { signIn, signUp };

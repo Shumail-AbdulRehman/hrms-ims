@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import z from "zod";
 import { signInService, signUpService } from "../services/personnel.service.js";
-export const signupSchema = z.object({
+export const personnelSchema = z.object({
     employeeId: z.string().optional(),
 
     firstName: z.string().min(2, "First name is required"),
@@ -72,21 +72,6 @@ export const signupSchema = z.object({
     updatedAt: z.coerce.date().optional(),
 });
 
-const signUp = asyncHandler(async (req, res, next) => {
-    const parsed = signupSchema.safeParse(req.body);
-    if (!parsed.success) {
-        return next(new ApiError(400, parsed.error.errors[0].message));
-    }
-
-    const data = parsed.data;
-
-    const result = await createPersonnelService(data);
-
-    res.status(201).json(
-        new ApiResponse(201, result, "Personnel signup successful")
-    );
-});
-
 const signInSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -113,5 +98,7 @@ const signIn = asyncHandler(async (req, res) => {
         .cookie("refreshToken", loginData.refreshToken, options)
         .json(new ApiResponse(200, loginData, "User logged in successfully"));
 });
+
+const signUp = asyncHandler((req, res, next) => {});
 
 export { signIn, signUp };
