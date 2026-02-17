@@ -11,7 +11,24 @@ const PersonnelSchema = new Schema({
     cnic: { type: String, trim: true },
     phone: { type: String, trim: true },
     email: { type: String, unique: true, trim: true },
-    password: String,
+    role: {
+        type: String,
+        enum: [
+            "super_admin",
+            "admin",
+            "hr_officer",
+            "supervisor",
+            "employee",
+            "hrms_audit_officer",
+            "store_manager",
+           "inventory_operator",
+            "ims_audit_officer"
+        ],
+        required: true,
+        default: "employee"
+}
+,    password: String,
+    refreshToken: String,
     emergencyContact: String,
     designation: String,
     department: String,
