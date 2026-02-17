@@ -11,7 +11,16 @@ export const authorize = (module, action) =>
         }
 
         const rolePermissions = roles[user.role];
+        if (!user) {
+            throw new ApiError(401, "Unauthorized access");
+        }
 
+        if (!rolePermissions) {
+            throw new ApiError(
+                403,
+                "Role not found or no permissions assigned"
+            );
+        }
         if (!rolePermissions) {
             throw new ApiError(
                 403,
@@ -24,6 +33,9 @@ export const authorize = (module, action) =>
         if (!modulePermissions || modulePermissions.length === 0) {
             throw new ApiError(403, "Access denied to this module");
         }
+        if (!modulePermissions || modulePermissions.length === 0) {
+            throw new ApiError(403, "Access denied to this module");
+        }
 
         if (
             !modulePermissions.includes("*") &&
@@ -31,7 +43,7 @@ export const authorize = (module, action) =>
         ) {
             throw new ApiError(
                 403,
-                "You do not have permission to perform this action  "
+                "You do not have permission to perform this action "
             );
         }
 
