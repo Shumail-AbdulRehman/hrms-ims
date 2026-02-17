@@ -4,9 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import z from "zod";
 import { signInService, signUpService } from "../services/personnel.service.js";
 
- const signupSchema = z.object({
-    employeeId: z.string().optional(),
-
+const signupSchema = z.object({
     firstName: z.string().min(2, "First name is required"),
     lastName: z.string().min(2, "Last name is required"),
 
@@ -19,23 +17,8 @@ import { signInService, signUpService } from "../services/personnel.service.js";
     phone: z.string().optional(),
 
     email: z.string().email("Invalid email"),
-    role: z
-        .enum([
-            "super_admin",
-            "admin",
-            "hr_officer",
-            "supervisor",
-            "employee",
-            "hrms_audit_officer",
-            "store_manager",
-            "inventory_operator",
-            "ims_audit_officer",
-        ])
-        .default("employee"),
 
     password: z.string().min(6, "Password must be at least 6 characters"),
-
-    refreshToken: z.string().optional(),
 
     designation: z.string().optional(),
 
@@ -46,10 +29,6 @@ import { signInService, signUpService } from "../services/personnel.service.js";
     employeeType: z.enum(["permanent", "contract"]).default("permanent"),
 
     joiningDate: z.coerce.date().optional(),
-
-    status: z
-        .enum(["active", "on_leave", "terminated", "inactive"])
-        .default("active"),
 
     supervisor: z.string().optional(),
 
@@ -68,15 +47,12 @@ import { signInService, signUpService } from "../services/personnel.service.js";
             })
         )
         .optional(),
-
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
 });
 
-const signUp = asyncHandler(async (req, res, next) => {
+const signUp = asyncHandler(async (req, res) => {
     const parsed = signupSchema.safeParse(req.body);
     if (!parsed.success) {
-        return next(new ApiError(400, parsed.error.errors[0].message));
+        throw new ApiError(400, parsed.error.errors[0].message);
     }
 
     const data = parsed.data;
