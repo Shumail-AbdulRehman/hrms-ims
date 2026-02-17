@@ -1,39 +1,35 @@
-
-import mongoose,{Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const ItemMasterSchema = new Schema({
-
     unitId: { type: String, unique: true, uppercase: true },
     name: { type: String, required: true, trim: true },
-    description: String,
+    description: { type: String, trim: true },
     category: {
         type: String,
         required: true,
         enum: ['tools', 'spare_parts', 'consumables', 'equipment']
     },
-     uom: {
+    uom: {
         type: String,
         required: true,
         enum: ['pcs', 'kg', 'liters', 'meters', 'boxes'] 
     },
     minStockLevel: { type: Number, default: 0 },
-    maxStockLevel: Number,
-    reorderPoint: Number,
+    maxStockLevel: { type: Number, default: 0 },
+    reorderPoint: { type: Number, default: 0 },
     currentStock: { type: Number, default: 0 },
     unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 
-UnitSchema.pre('save', async function () {
+ItemMasterSchema.pre('save', async function (next) {
     if (!this.unitId) {
-        const count = await mongoose.model('Unit').countDocuments();
+        const count = await mongoose.model('ItemMaster').countDocuments();
         this.unitId = 'UNIT-' + String(count + 1).padStart(5, '0');
     }
+    next();
 });
 
-
-
- export default ItemMaster=mongoose.model('ItemMaster', ItemMasterSchema)
-
-
+const ItemMaster = mongoose.model('ItemMaster', ItemMasterSchema);
+export default ItemMaster;

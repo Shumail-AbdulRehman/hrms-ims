@@ -1,5 +1,6 @@
-import mongoose,{Schema} from "mongoose";
-
+import mongoose, { Schema } from "mongoose";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const PersonnelSchema = new Schema({
     employeeId: { type: String, unique: true, uppercase: true },
@@ -7,10 +8,11 @@ const PersonnelSchema = new Schema({
     lastName: { type: String, required: true, trim: true },
     dateOfBirth: Date,
     gender: { type: String, enum: ['male', 'female', 'other'] },
-    cnic: String,
-    phone: String,
-    email: String,
-    emergencyContact:String,
+    cnic: { type: String, trim: true },
+    phone: { type: String, trim: true },
+    email: { type: String, unique: true, trim: true },
+    password: String,
+    emergencyContact: String,
     designation: String,
     department: String,
     unit: { type: Schema.Types.ObjectId, ref: 'Unit', required: true },
@@ -32,13 +34,52 @@ const PersonnelSchema = new Schema({
 }, { timestamps: true });
 
 
-
-PersonnelSchema.pre('save', async function () {
+PersonnelSchema.pre('save', async function (next) {
+    
     if (!this.employeeId) {
         const count = await mongoose.model('Personnel').countDocuments();
         this.employeeId = 'EMP-' + String(count + 1).padStart(5, '0');
     }
+
+   
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+
+    next();
 });
 
 
-export default Personnel= mongoose.model('Personnel', PersonnelSchema);
+PersonnelSchema.methods.isPasswordCorrect = async function (pass) {
+    return await bcrypt.compare(pass, this.password);
+};
+
+PersonnelSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            employeeId: this.employeeId,
+            email: this.email,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            designation: this.designation,
+            department: this.department,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    );
+};
+
+PersonnelSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            employeeId: this.employeeId
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    );
+};
+
+const Personnel = mongoose.model('Personnel', PersonnelSchema);
+export default Personnel;
