@@ -5,7 +5,7 @@ import {
     signIn,
     signUp,
 
- } from "../controllers/personnel.controller";
+ } from "../controllers/personnel.controller.js";
 
  const router= Router();
 

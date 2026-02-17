@@ -1,5 +1,5 @@
-import Personnel from "../models/common/personnel.model";
-import { ApiError } from "../utils/ApiError";
+import Personnel from "../models/personnel.model.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const signInService = async (email, password) => {
   const personnel = await Personnel.findOne({ email });

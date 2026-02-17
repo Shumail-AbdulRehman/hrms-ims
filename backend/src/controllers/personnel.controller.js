@@ -1,10 +1,10 @@
 
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import {ApiResponse} from "../utils/ApiResponse";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
 import z from "zod";
 
-import { signInService } from "../services/personnel.service";
+import { signInService } from "../services/personnel.service.js";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
