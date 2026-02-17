@@ -1,15 +1,51 @@
-import mongoose from "mongoose";
-import Personnel from "../models/common/personnel.model";
+
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import {ApiResponse} from "../utils/ApiResponse";
+import z from "zod";
 
+import { signInService } from "../services/personnel.service";
 
-
-const signIn=asyncHandler((req,res,next)=>
-{
-
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
+
+
+
+const signIn = asyncHandler(async (req, res) => {
+  const result = signInSchema.safeParse(req.body);
+
+  if (!result.success) {
+    throw new ApiError(400, "Validation failed", result.error.errors);
+  }
+
+  const { email, password } = result.data;
+
+  const loginData = await signInService(email, password);
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  res
+    .status(200)
+    .cookie("accessToken", loginData.accessToken, options)
+    .cookie("refreshToken", loginData.refreshToken, options)
+    .json(
+      new ApiResponse(200, loginData, "User logged in successfully")
+    );
+});
+
+
+
+
+
+
+
+
+
 
 const signUp=asyncHandler((req,res,next)=>
 {
