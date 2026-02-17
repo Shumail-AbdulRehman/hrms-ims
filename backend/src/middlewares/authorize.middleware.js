@@ -31,7 +31,7 @@ export const authorize = (module, action) =>
         ) {
             throw new ApiError(
                 403,
-                "You do not have permission to perform this action"
+                "You do not have permission to perform this action "
             );
         }
 
