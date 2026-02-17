@@ -60,7 +60,7 @@ const PersonnelSchema = new Schema(
 // PersonnelSchema.index({ employeeId: 1 });
 
 // Generate unique employeeId and hash password before save
-PersonnelSchema.pre("save", async function (next) {
+PersonnelSchema.pre("save", async function () {
   if (!this.employeeId) {
     let unique = false;
     while (!unique) {
@@ -77,7 +77,7 @@ PersonnelSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  next();
+ 
 });
 
 // Compare password

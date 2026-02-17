@@ -3,7 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import z from "zod";
 import { signInService, signUpService } from "../services/personnel.service.js";
-export const signupSchema = z.object({
+
+ const signupSchema = z.object({
     employeeId: z.string().optional(),
 
     firstName: z.string().min(2, "First name is required"),
@@ -80,7 +81,7 @@ const signUp = asyncHandler(async (req, res, next) => {
 
     const data = parsed.data;
 
-    const result = await createPersonnelService(data);
+    const result = await signUpService(data);
 
     res.status(201).json(
         new ApiResponse(201, result, "Personnel signup successful")
