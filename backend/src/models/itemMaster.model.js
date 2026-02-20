@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ItemMasterSchema = new Schema({
+const ItemMasterSchema = new mongoose.Schema({
     itemId:   { type: String, unique: true, uppercase: true },  
     name:     { type: String, required: true, trim: true },     
     category: { 
@@ -10,7 +10,7 @@ const ItemMasterSchema = new Schema({
     uom:          { type: String, required: true },   
     currentStock: { type: Number, default: 0 },       
     minStockLevel:{ type: Number, default: 0 },       
-    unit:    { type: Schema.Types.ObjectId, ref: "Unit", required: true },
+    unit:    { type: mongoose.Schema.Types.ObjectId, ref: "Unit", required: true },
     isActive:{ type: Boolean, default: true }
 }, { timestamps: true });
 

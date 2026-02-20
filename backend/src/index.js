@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import express from 'express';
-import connectDb from './db/index.js';
-import personnelRoutes from "./routes/personnel.route.js"
-
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import express from "express";
+import connectDb from "./db/index.js";
+import personnelRoutes from "./routes/personnel.route.js";
+import itemRoutes from "./routes/item.routes.js";
 
 const app = express();
 
-dotenv.config(); 
+dotenv.config();
 connectDb();
 
 app.use(express.json());
@@ -17,10 +17,5 @@ app.use(cookieParser());
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-
-
-
-
 app.use("/api/v1/personnel", personnelRoutes);
-
-
+app.use("/api/v1/item", itemRoutes);

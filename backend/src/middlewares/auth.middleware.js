@@ -1,10 +1,7 @@
-
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import Personnel from "../models/common/personnel.model.js";
-import {ApiError} from "../utils/ApiError.js"
-
-
+import Personnel from "../models/personnel.model.js";
+import { ApiError } from "../utils/ApiError.js";
 
 export const verifyJwt = asyncHandler(async (req, res, next) => {
     const token =
@@ -23,10 +20,9 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
         "-password -refreshToken"
     );
 
-   
-    if (!user || user.status !== 'active') {
-    throw new ApiError(401, "invalid or inactive user");
-}
+    if (!user || user.status !== "active") {
+        throw new ApiError(401, "invalid or inactive user");
+    }
 
     req.user = user;
     next();
