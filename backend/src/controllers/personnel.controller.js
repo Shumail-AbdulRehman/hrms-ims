@@ -2,67 +2,18 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import z from "zod";
-import { signInService, signUpService } from "../services/personnel.service.js";
+import {
+    signInService,
+    createPersonnelService,
+    getPersonnelService,
+    getPersonnelByIdService,
+    updatePersonnelService,
+} from "../services/personnel.service.js";
 
-const signupSchema = z.object({
-    firstName: z.string().min(2, "First name is required"),
-    lastName: z.string().min(2, "Last name is required"),
-
-    dateOfBirth: z.coerce.date().optional(),
-
-    gender: z.enum(["male", "female", "other"]).optional(),
-
-    cnic: z.string().optional(),
-
-    phone: z.string().optional(),
-
-    email: z.string().email("Invalid email"),
-
-    password: z.string().min(6, "Password must be at least 6 characters"),
-
-    designation: z.string().optional(),
-
-    department: z.string().optional(),
-
-    unit: z.string().min(1, "Unit is required"),
-
-    employeeType: z.enum(["permanent", "contract"]).default("permanent"),
-
-    joiningDate: z.coerce.date().optional(),
-
-    supervisor: z.string().optional(),
-
-    emergencyContact: z.string().optional(),
-
-    serviceHistory: z
-        .array(
-            z.object({
-                designation: z.string().optional(),
-
-                unit: z.string().optional(),
-
-                startDate: z.coerce.date().optional(),
-
-                endDate: z.coerce.date().optional(),
-            })
-        )
-        .optional(),
-});
-
-const signUp = asyncHandler(async (req, res) => {
-    const parsed = signupSchema.safeParse(req.body);
-    if (!parsed.success) {
-        throw new ApiError(400, parsed.error.errors[0].message);
-    }
-
-    const data = parsed.data;
-
-    const result = await signUpService(data);
-
-    res.status(201).json(
-        new ApiResponse(201, result, "Personnel signup successful")
-    );
-});
+const VALID_ROLES = [
+    "super_admin", "admin", "hr_officer", "supervisor", "employee",
+    "hrms_audit_officer", "store_manager", "inventory_operator", "ims_audit_officer"
+];
 
 const signInSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -77,7 +28,6 @@ const signIn = asyncHandler(async (req, res) => {
     }
 
     const { email, password } = result.data;
-
     const loginData = await signInService(email, password);
 
     const options = {
@@ -91,4 +41,104 @@ const signIn = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, loginData, "User logged in successfully"));
 });
 
-export { signIn, signUp };
+const createPersonnelSchema = z.object({
+    firstName: z.string().min(2, "First name is required"),
+    lastName: z.string().min(2, "Last name is required"),
+    dateOfBirth: z.coerce.date().optional(),
+    gender: z.enum(["male", "female", "other"]).optional(),
+    cnic: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().email("Invalid email"),
+    password: z.string().min(6).optional(),
+    designation: z.string().optional(),
+    department: z.string().optional(),
+    unit: z.string().optional(),
+    role: z.enum(VALID_ROLES, { message: "Invalid role" }),
+    employeeType: z.enum(["permanent", "contract"]).default("permanent"),
+    joiningDate: z.coerce.date().optional(),
+    supervisor: z.string().optional(),
+    emergencyContact: z.string().optional(),
+});
+
+const createPersonnel = asyncHandler(async (req, res) => {
+    const parsed = createPersonnelSchema.safeParse(req.body);
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors[0].message);
+    }
+
+    const creatorRole = req.user.role;
+    const creatorUnit = req.user.unit;
+
+    if (creatorRole === "admin" && parsed.data.unit && String(parsed.data.unit) !== String(creatorUnit)) {
+        throw new ApiError(403, "Admin can only create personnel in their own unit");
+    }
+
+    if (creatorRole === "super_admin" && !parsed.data.unit) {
+        throw new ApiError(400, "Super Admin must specify a unit for the new personnel");
+    }
+
+    const personnel = await createPersonnelService(parsed.data, creatorRole, creatorUnit);
+
+    res.status(201).json(
+        new ApiResponse(201, personnel, "Personnel created successfully")
+    );
+});
+
+const updatePersonnelSchema = z.object({
+    firstName: z.string().min(2).optional(),
+    lastName: z.string().min(2).optional(),
+    dateOfBirth: z.coerce.date().optional(),
+    gender: z.enum(["male", "female", "other"]).optional(),
+    cnic: z.string().optional(),
+    phone: z.string().optional(),
+    designation: z.string().optional(),
+    department: z.string().optional(),
+    unit: z.string().optional(),
+    role: z.enum(VALID_ROLES).optional(),
+    employeeType: z.enum(["permanent", "contract"]).optional(),
+    joiningDate: z.coerce.date().optional(),
+    supervisor: z.string().optional(),
+    emergencyContact: z.string().optional(),
+    status: z.enum(["active", "inactive", "resigned", "retired", "terminated"]).optional(),
+});
+
+const updatePersonnel = asyncHandler(async (req, res) => {
+    const parsed = updatePersonnelSchema.safeParse(req.body);
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors[0].message);
+    }
+
+    const personnel = await updatePersonnelService(
+        req.params.id, parsed.data, req.user.role, req.user.unit
+    );
+
+    res.status(200).json(
+        new ApiResponse(200, personnel, "Personnel updated successfully")
+    );
+});
+
+const getPersonnel = asyncHandler(async (req, res) => {
+    const personnel = await getPersonnelService(req.user.role, req.user.unit);
+
+    res.status(200).json(
+        new ApiResponse(200, personnel, "Personnel fetched successfully")
+    );
+});
+
+const getPersonnelById = asyncHandler(async (req, res) => {
+    const personnel = await getPersonnelByIdService(
+        req.params.id, req.user.role, req.user.unit
+    );
+
+    res.status(200).json(
+        new ApiResponse(200, personnel, "Personnel fetched successfully")
+    );
+});
+
+export {
+    signIn,
+    createPersonnel,
+    updatePersonnel,
+    getPersonnel,
+    getPersonnelById,
+};

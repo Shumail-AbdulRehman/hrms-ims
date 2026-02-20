@@ -1,0 +1,713 @@
+{
+    "info": {
+        "name": "HRMS-IMS Inventory Operator API",
+        "description": "Complete API collection for testing the Inventory Operator and Employee Stock Request endpoints.\n\nSetup:\n1. Run 'Sign Up Operator' first to get a token\n2. Run 'Sign Up Employee' to get an employee token\n3. Copy the accessToken from the response and paste it into the collection variable 'operator_token' or 'employee_token'\n4. You'll also need a valid item ID — create one via DB or store manager endpoint first",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000/api/v1"
+        },
+        {
+            "key": "operator_token",
+            "value": "PASTE_OPERATOR_TOKEN_HERE"
+        },
+        {
+            "key": "employee_token",
+            "value": "PASTE_EMPLOYEE_TOKEN_HERE"
+        },
+        {
+            "key": "unit_id",
+            "value": "000000000000000000000001"
+        },
+        {
+            "key": "item_id",
+            "value": "PASTE_ITEM_ID_HERE"
+        },
+        {
+            "key": "employee_id",
+            "value": "PASTE_EMPLOYEE_PERSONNEL_ID_HERE"
+        },
+        {
+            "key": "request_id",
+            "value": "PASTE_STOCK_REQUEST_ID_HERE"
+        }
+    ],
+    "item": [
+        {
+            "name": "🔐 Auth",
+            "item": [
+                {
+                    "name": "Sign Up — Inventory Operator",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/personnel/signUp"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"firstName\": \"Ali\",\n  \"lastName\": \"Operator\",\n  \"email\": \"operator@test.com\",\n  \"password\": \"123456\",\n  \"role\": \"inventory_operator\",\n  \"unit\": \"{{unit_id}}\",\n  \"designation\": \"Inventory Operator\",\n  \"department\": \"IMS\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Sign Up — Employee",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/personnel/signUp"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"firstName\": \"Ahmed\",\n  \"lastName\": \"Employee\",\n  \"email\": \"employee@test.com\",\n  \"password\": \"123456\",\n  \"role\": \"employee\",\n  \"unit\": \"{{unit_id}}\",\n  \"designation\": \"General Employee\",\n  \"department\": \"Operations\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Sign In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/personnel/signIn"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"operator@test.com\",\n  \"password\": \"123456\"\n}"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "📦 Stock In (Receive Items)",
+            "item": [
+                {
+                    "name": "Process Stock In ✅",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-in"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 100,\n  \"vendor\": \"PASTE_VENDOR_ID_OR_REMOVE\",\n  \"remarks\": \"Monthly shipment received\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock In — Missing Fields (400) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-in"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"remarks\": \"No item or quantity\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock In — Invalid Item (404) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-in"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"000000000000000000000099\",\n  \"quantity\": 50\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock In — No Auth (401) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-in"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 50\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock In — As Employee (403) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-in"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 50\n}"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "📋 Employee Stock Requests",
+            "item": [
+                {
+                    "name": "Create Stock Request (Employee) ✅",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/stock-requests"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 5,\n  \"purpose\": \"Need pens for office work\",\n  \"remarks\": \"Urgent\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Stock Request — Missing Purpose (400) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/stock-requests"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 5\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "View My Requests (Employee) ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/stock-requests/my"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Request — As Operator (403) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/stock-requests"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 5,\n  \"purpose\": \"Test\"\n}"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "✅❌ Approve / Reject Requests",
+            "item": [
+                {
+                    "name": "View All Stock Requests (Operator) ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "View Pending Only ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests?status=pending"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Approve Request ✅",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests/{{request_id}}/approve"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject Request ✅",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests/{{request_id}}/reject"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"rejectionReason\": \"Item is reserved for emergency use only\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject — No Reason (400) ❌",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests/{{request_id}}/reject"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Approve — Non-existent ID (404) ❌",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests/000000000000000000000099/approve"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Approve — As Employee (403) ❌",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-requests/{{request_id}}/approve"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "🔄 Stock Returns",
+            "item": [
+                {
+                    "name": "Return — Excess (stock increments) ✅",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-returns"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 3,\n  \"returnedBy\": \"{{employee_id}}\",\n  \"returnReason\": \"excess\",\n  \"remarks\": \"Employee took too many, returning extras\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Return — Damaged (stock stays same) ✅",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-returns"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 2,\n  \"returnedBy\": \"{{employee_id}}\",\n  \"returnReason\": \"damaged\",\n  \"remarks\": \"Broken during use\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Return — Missing Fields (400) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-returns"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\"\n}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Return — Invalid Reason (400) ❌",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-returns"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"item\": \"{{item_id}}\",\n  \"quantity\": 1,\n  \"returnedBy\": \"{{employee_id}}\",\n  \"returnReason\": \"stolen\"\n}"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "👁️ View Inventory",
+            "item": [
+                {
+                    "name": "View All Items (Operator) ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/inventory"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "View Single Item ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/inventory/{{item_id}}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "View Inventory — No Auth (401) ❌",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/inventory"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "View Inventory — As Employee (403) ❌",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employee_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/inventory"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "📊 Stock History",
+            "item": [
+                {
+                    "name": "All History ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-history"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock In History Only ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-history?type=in"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Stock Out History Only ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-history?type=out"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Returns History Only ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-history?type=return"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "History with Date Filter ✅",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{operator_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/inventory/stock-history?type=in&startDate=2026-01-01&endDate=2026-12-31"
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}

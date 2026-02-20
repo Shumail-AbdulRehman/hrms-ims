@@ -66,7 +66,7 @@ const roles = {
       "register_item",
       "create_procurement_request",
       "manage_vendors",
-      "view_inventory"
+      "view_inventory",
     ]
   },
 
