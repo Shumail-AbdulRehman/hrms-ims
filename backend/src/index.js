@@ -7,6 +7,8 @@ import inventoryOperatorRoutes from "./routes/inventory-operator.route.js";
 import stockRequestRoutes from "./routes/stock-request.route.js";
 import vendorRoutes from "./routes/vendor.route.js";
 import unitRoutes from "./routes/unit.route.js";
+import attendanceRoutes from "./routes/attendance.route.js";
+import shiftRoutes from "./routes/shift.route.js";
 
 
 const app = express();
@@ -28,3 +30,6 @@ app.use("/api/v1/inventory", inventoryOperatorRoutes);
 app.use("/api/v1/stock-requests", stockRequestRoutes);
 app.use("/api/v1/vendors", vendorRoutes);
 app.use("/api/v1/units", unitRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
+app.use("/api/v1/shifts", shiftRoutes);
+

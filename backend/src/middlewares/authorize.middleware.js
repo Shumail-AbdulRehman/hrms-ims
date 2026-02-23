@@ -6,13 +6,13 @@ import roles from "../config/roles.js";
 
 export const authorize = (module, action) =>
   asyncHandler(async (req, res, next) => {
-    const user = req.user; 
+    const user = req.user;
 
     if (!user) {
       throw new ApiError(401, "Unauthorized access");
     }
 
-   
+
     const rolePermissions = roles[user.role];
 
     if (!rolePermissions) {
@@ -25,11 +25,38 @@ export const authorize = (module, action) =>
       throw new ApiError(403, "Access denied to this module");
     }
 
-   
+
     if (!modulePermissions.includes("*") && !modulePermissions.includes(action)) {
       throw new ApiError(403, "You do not have permission to perform this action");
     }
 
-  
+
+    next();
+  });
+
+export const authorizeAny = (...permissions) =>
+  asyncHandler(async (req, res, next) => {
+    const user = req.user;
+
+    if (!user) {
+      throw new ApiError(401, "Unauthorized access");
+    }
+
+    const rolePermissions = roles[user.role];
+
+    if (!rolePermissions) {
+      throw new ApiError(403, "Role not found or no permissions assigned");
+    }
+
+    const hasPermission = permissions.some(([module, action]) => {
+      const modulePermissions = rolePermissions[module];
+      if (!modulePermissions || modulePermissions.length === 0) return false;
+      return modulePermissions.includes("*") || modulePermissions.includes(action);
+    });
+
+    if (!hasPermission) {
+      throw new ApiError(403, "You do not have permission to perform this action");
+    }
+
     next();
   });

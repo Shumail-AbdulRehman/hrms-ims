@@ -4,13 +4,14 @@ import { useToast } from '../useToast';
 import { useAuth } from '../AuthContext';
 
 const ROLES = [
-    'super_admin', 'admin', 'hr_officer', 'supervisor', 'employee',
-    'store_manager', 'inventory_operator', 'hrms_audit_officer', 'ims_audit_officer'
+    'super_admin', 'admin', 'sub_admin', 'sdo', 'sub_engineer',
+    'supervisor', 'employee', 'store_manager', 'inventory_operator', 'ims_audit_officer'
 ];
 
 export default function Personnel() {
     const { user } = useAuth();
     const isSuperAdmin = user?.role === 'super_admin';
+    const canCreate = ['super_admin', 'admin', 'sub_admin'].includes(user?.role);
     const [personnel, setPersonnel] = useState([]);
     const [units, setUnits] = useState([]);
     const [loading, setLoading] = useState(true);

@@ -14,11 +14,11 @@ const router = Router();
 
 router.use(verifyJwt);
 
-router.post("/", authorize("units", "manage"), createUnit);
-router.get("/", authorize("units", "manage"), getUnits);
-router.get("/:id", authorize("units", "manage"), getUnitById);
-router.put("/:id", authorize("units", "manage"), updateUnit);
-router.patch("/:id/deactivate", authorize("units", "manage"), deactivateUnit);
-router.patch("/:id/activate", authorize("units", "manage"), activateUnit);
+router.post("/", authorize("unit", "create"), createUnit);
+router.get("/", authorize("unit", "view"), getUnits);
+router.get("/:id", authorize("unit", "view"), getUnitById);
+router.put("/:id", authorize("unit", "update"), updateUnit);
+router.patch("/:id/deactivate", authorize("unit", "deactivate"), deactivateUnit);
+router.patch("/:id/activate", authorize("unit", "activate"), activateUnit);
 
 export default router;

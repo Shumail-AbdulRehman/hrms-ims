@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/authorize.middleware.js";
+import { authorize, authorizeAny } from "../middlewares/authorize.middleware.js";
 import {
     signIn,
     createPersonnel,
@@ -15,9 +15,9 @@ router.post("/signIn", signIn);
 
 router.use(verifyJwt);
 
-router.post("/create", authorize("hrms", "manage_users"), createPersonnel);
-router.get("/", authorize("hrms", "manage_users"), getPersonnel);
-router.get("/:id", authorize("hrms", "manage_users"), getPersonnelById);
-router.put("/:id", authorize("hrms", "manage_users"), updatePersonnel);
+router.post("/create", authorize("employee", "create"), createPersonnel);
+router.get("/", authorizeAny(["employee", "view"], ["employee", "view_own"]), getPersonnel);
+router.get("/:id", authorizeAny(["employee", "view"], ["employee", "view_own"]), getPersonnelById);
+router.put("/:id", authorize("employee", "update"), updatePersonnel);
 
 export default router;

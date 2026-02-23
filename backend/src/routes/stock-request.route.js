@@ -10,7 +10,7 @@ const router = Router();
 
 router.use(verifyJwt);
 
-router.post("/", authorize("ims", "request_stock_out"), createStockRequest);
-router.get("/my", authorize("ims", "request_stock_out"), getMyStockRequests);
+router.post("/", authorize("stock_request", "create"), createStockRequest);
+router.get("/my", authorize("stock_request", "view"), getMyStockRequests);
 
 export default router;

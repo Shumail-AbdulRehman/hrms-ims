@@ -4,7 +4,9 @@ import { useAuth } from '../AuthContext';
 const NAV = [
     { to: '/', label: '📊 Dashboard', roles: null },
     { to: '/units', label: '🏢 Units', roles: ['super_admin'] },
-    { to: '/personnel', label: '👥 Personnel', roles: ['super_admin', 'admin'] },
+    { to: '/personnel', label: '👥 Personnel', roles: ['super_admin', 'admin', 'sub_admin'] },
+    { to: '/attendance', label: '📅 Attendance', roles: ['super_admin', 'admin', 'sub_admin', 'sdo', 'sub_engineer', 'supervisor', 'employee'] },
+    { to: '/shifts', label: '⏰ Shifts', roles: ['super_admin', 'sub_admin', 'supervisor', 'sdo', 'sub_engineer', 'employee'] },
     { to: '/vendors', label: '🏪 Vendors', roles: ['store_manager', 'super_admin'] },
     { to: '/inventory', label: '📦 Inventory', roles: ['inventory_operator', 'store_manager', 'super_admin', 'admin'] },
     { to: '/stock-in', label: '📥 Stock In', roles: ['inventory_operator', 'super_admin'] },

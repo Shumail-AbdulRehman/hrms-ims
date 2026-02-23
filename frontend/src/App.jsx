@@ -5,6 +5,8 @@ import Layout from './pages/Layout';
 import Dashboard from './pages/Dashboard';
 import Units from './pages/Units';
 import Personnel from './pages/Personnel';
+import Attendance from './pages/Attendance';
+import Shifts from './pages/Shifts';
 import Vendors from './pages/Vendors';
 import Inventory from './pages/Inventory';
 import StockIn from './pages/StockIn';
@@ -34,6 +36,8 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="units" element={<Units />} />
             <Route path="personnel" element={<Personnel />} />
+            <Route path="attendance" element={<Attendance />} />
+            <Route path="shifts" element={<Shifts />} />
             <Route path="vendors" element={<Vendors />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="stock-in" element={<StockIn />} />

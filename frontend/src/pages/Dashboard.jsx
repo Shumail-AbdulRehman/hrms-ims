@@ -5,13 +5,14 @@ export default function Dashboard() {
 
     const roleInfo = {
         super_admin: { color: 'from-purple-500 to-pink-500', desc: 'Full system access — manage units, users, and all modules' },
-        admin: { color: 'from-blue-500 to-cyan-500', desc: 'Unit admin — manage users, approve procurement & discipline' },
-        hr_officer: { color: 'from-green-500 to-emerald-500', desc: 'HR operations — employees, attendance, leave, training' },
-        supervisor: { color: 'from-yellow-500 to-orange-500', desc: 'Team management — view team data, apply leave' },
-        employee: { color: 'from-slate-500 to-slate-400', desc: 'Self-service — profile, leave, stock requests' },
+        admin: { color: 'from-blue-500 to-cyan-500', desc: 'Unit admin (CsMES) — final approval for attendance, manage users' },
+        sub_admin: { color: 'from-green-500 to-emerald-500', desc: 'Unit manager (GE/AGE) — mark attendance, approve shifts, manage personnel' },
+        sdo: { color: 'from-amber-500 to-yellow-500', desc: 'SDO — view unit data, attendance, and shifts' },
+        sub_engineer: { color: 'from-orange-500 to-amber-500', desc: 'Sub Engineer — view unit data, attendance, and shifts' },
+        supervisor: { color: 'from-yellow-500 to-orange-500', desc: 'Supervisor — assign shifts, view unit data' },
+        employee: { color: 'from-slate-500 to-slate-400', desc: 'Self-service — view own profile, attendance, and shifts' },
         store_manager: { color: 'from-indigo-500 to-blue-500', desc: 'IMS management — items, vendors, procurement' },
         inventory_operator: { color: 'from-teal-500 to-green-500', desc: 'Stock operations — receive, issue, return items' },
-        hrms_audit_officer: { color: 'from-gray-500 to-gray-400', desc: 'HRMS auditing — read-only access to HR data' },
         ims_audit_officer: { color: 'from-gray-500 to-gray-400', desc: 'IMS auditing — read-only access to inventory data' },
     };
 

@@ -5,8 +5,8 @@ import { useToast } from '../useToast';
 import api from '../api';
 
 const ROLES = [
-    'super_admin', 'admin', 'hr_officer', 'supervisor', 'employee',
-    'store_manager', 'inventory_operator', 'hrms_audit_officer', 'ims_audit_officer'
+    'super_admin', 'admin', 'sub_admin', 'sdo', 'sub_engineer',
+    'supervisor', 'employee', 'store_manager', 'inventory_operator', 'ims_audit_officer'
 ];
 
 export default function SignUp() {

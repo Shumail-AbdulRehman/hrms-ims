@@ -11,8 +11,8 @@ import {
 } from "../services/personnel.service.js";
 
 const VALID_ROLES = [
-    "super_admin", "admin", "hr_officer", "supervisor", "employee",
-    "hrms_audit_officer", "store_manager", "inventory_operator", "ims_audit_officer"
+    "super_admin", "admin", "sub_admin", "sdo", "sub_engineer",
+    "supervisor", "employee", "store_manager", "inventory_operator", "ims_audit_officer"
 ];
 
 const signInSchema = z.object({
@@ -69,8 +69,10 @@ const createPersonnel = asyncHandler(async (req, res) => {
     const creatorRole = req.user.role;
     const creatorUnit = req.user.unit;
 
-    if (creatorRole === "admin" && parsed.data.unit && String(parsed.data.unit) !== String(creatorUnit)) {
-        throw new ApiError(403, "Admin can only create personnel in their own unit");
+    // admin and sub_admin can only create in their own unit
+    const unitScopedCreators = ["admin", "sub_admin"];
+    if (unitScopedCreators.includes(creatorRole) && parsed.data.unit && String(parsed.data.unit) !== String(creatorUnit)) {
+        throw new ApiError(403, "You can only create personnel in your own unit");
     }
 
     if (creatorRole === "super_admin" && !parsed.data.unit) {
